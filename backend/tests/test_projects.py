@@ -2,6 +2,7 @@
 
 from uuid import UUID
 
+import pytest
 from fastapi.testclient import TestClient
 
 
@@ -39,8 +40,27 @@ def test_created_project_appears_in_list(client: TestClient) -> None:
     assert response.json()[0]["name"] == "Interview preparation"
 
 
-def test_project_name_cannot_be_blank(client: TestClient) -> None:
-    response = client.post("/api/v1/projects", json={"name": "   "})
+@pytest.mark.parametrize(
+    "invalid_name",
+    ["", "   ", "a" * 101],
+    ids=["empty", "whitespace-only", "longer-than-100-characters"],
+)
+def test_project_name_rejects_invalid_values(
+    client: TestClient,
+    invalid_name: str,
+) -> None:
+    response = client.post("/api/v1/projects", json={"name": invalid_name})
 
     assert response.status_code == 422
+    assert response.json()["detail"][0]["loc"] == ["body", "name"]
+
+
+def test_project_name_is_trimmed(client: TestClient) -> None:
+    response = client.post(
+        "/api/v1/projects",
+        json={"name": "  ContextBridge  "},
+    )
+
+    assert response.status_code == 201
+    assert response.json()["name"] == "ContextBridge"
 
