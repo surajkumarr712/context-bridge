@@ -1,0 +1,45 @@
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: context-bridge-api:local
+    environment:
+      DATABASE_URL: postgresql+psycopg://contextbridge:contextbridge_dev@database:5432/contextbridge
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+  database:
+    image: pgvector/pgvector:0.8.7-pg18-trixie
+    environment:
+      POSTGRES_USER: contextbridge
+      POSTGRES_PASSWORD: contextbridge_dev
+      POSTGRES_DB: contextbridge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U contextbridge -d contextbridge"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+
