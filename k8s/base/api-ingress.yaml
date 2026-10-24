@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: contextbridge-api
+  namespace: contextbridge
+  labels:
+    app.kubernetes.io/name: contextbridge-api
+    app.kubernetes.io/part-of: contextbridge
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: contextbridge.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: contextbridge-api
+                port:
+                  name: http

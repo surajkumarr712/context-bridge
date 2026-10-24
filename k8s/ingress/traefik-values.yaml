@@ -1,0 +1,15 @@
+# Local learning configuration for the Traefik Ingress controller.
+# The chart creates the controller; this file only overrides the defaults that
+# matter for our kind cluster.
+service:
+  spec:
+    type: ClusterIP
+
+providers:
+  kubernetesIngress:
+    enabled: true
+
+ingressClass:
+  enabled: true
+  isDefaultClass: false
+  name: traefik

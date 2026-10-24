@@ -1,0 +1,29 @@
+# Small local-learning configuration for kube-prometheus-stack.
+grafana:
+  service:
+    type: ClusterIP
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: ALL
+
+prometheus:
+  service:
+    type: ClusterIP
+  prometheusSpec:
+    retention: 2d
+    serviceMonitorSelectorNilUsesHelmValues: true
+
+alertmanager:
+  enabled: false
+
+# These control-plane components run inside the kind container and do not
+# expose host endpoints in the same way as a conventional multi-node cluster.
+kubeControllerManager:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false

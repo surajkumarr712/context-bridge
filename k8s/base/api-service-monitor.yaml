@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: contextbridge-api
+  namespace: contextbridge
+  labels:
+    app.kubernetes.io/name: contextbridge-api
+    app.kubernetes.io/part-of: contextbridge
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: contextbridge-api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 5s

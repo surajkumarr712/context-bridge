@@ -1,0 +1,33 @@
+name: contextbridge-sonar
+
+services:
+  sonarqube:
+    image: sonarqube:26.10.0.133078-community
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    ports:
+      - "127.0.0.1:9000:9000"
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-extensions:/opt/sonarqube/extensions
+      - sonarqube-logs:/opt/sonarqube/logs
+    restart: unless-stopped
+
+  sonar-scanner:
+    image: sonarsource/sonar-scanner-cli:8.0.1
+    environment:
+      SONAR_HOST_URL: http://sonarqube:9000
+      SONAR_TOKEN: ${SONAR_TOKEN:-}
+    volumes:
+      - .:/usr/src:ro
+      - sonar-scanner-cache:/opt/sonar-scanner/.sonar/cache
+    depends_on:
+      - sonarqube
+    profiles:
+      - tools
+
+volumes:
+  sonarqube-data:
+  sonarqube-extensions:
+  sonarqube-logs:
+  sonar-scanner-cache:
