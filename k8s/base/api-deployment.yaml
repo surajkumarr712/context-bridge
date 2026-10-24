@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contextbridge-api
+  namespace: contextbridge
+  labels:
+    app.kubernetes.io/name: contextbridge-api
+    app.kubernetes.io/part-of: contextbridge
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: contextbridge-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: contextbridge-api
+        app.kubernetes.io/part-of: contextbridge
+    spec:
+      containers:
+        - name: api
+          image: context-bridge-api:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP

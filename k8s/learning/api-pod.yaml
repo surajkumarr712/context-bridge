@@ -1,0 +1,19 @@
+# Learning-only manifest that demonstrates a Pod without a controller.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: contextbridge-api
+  namespace: contextbridge
+  labels:
+    app.kubernetes.io/name: contextbridge-api
+    app.kubernetes.io/part-of: contextbridge
+spec:
+  containers:
+    - name: api
+      image: context-bridge-api:local
+      imagePullPolicy: IfNotPresent
+      ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+  restartPolicy: Always
